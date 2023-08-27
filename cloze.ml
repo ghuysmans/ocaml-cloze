@@ -8,11 +8,11 @@ let rec to_string ~fmt = function
   | Cat l -> String.concat "" (List.map (to_string ~fmt) l)
   | Mask (m, l, h) ->
     match fmt with
-    | `Solution ->
-      to_string ~fmt (Cat l) (* TODO unfold? *)
     | `Delete mask when mask = m ->
       "[" ^ Option.value ~default:"..." h ^ "]"
-    | `Delete _ | `Raw ->
+    | `Delete _ | `Solution ->
+      to_string ~fmt (Cat l) (* TODO unfold? *)
+    | `Raw ->
       "{{" ^ m ^ "::" ^
       to_string ~fmt (Cat l) ^
       (Option.value ~default:"" (Option.map ((^) "::") h)) ^
