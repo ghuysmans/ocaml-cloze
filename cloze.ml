@@ -56,6 +56,11 @@ let hint = Cat [
   Str " was founded in 1913.";
 ]
 
+let nested = Cat [
+  Mask ("c1", [Str "Canberra was "; Mask ("c2", [Str "founded"], None)], None);
+  Str " in 1913.";
+]
+
 let () =
   let f t =
     Printf.printf "%S\n" (to_string t);
@@ -66,3 +71,4 @@ let () =
   f one;
   f two;
   f hint;
+  f nested;
