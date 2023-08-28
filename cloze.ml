@@ -77,6 +77,13 @@ let nested = Cat [
   Str " in 1913.";
 ]
 
+let rep x n =
+  let rec f acc = function
+    | 0 -> acc
+    | n -> f (Cat [x; acc]) (n - 1)
+  in
+  f (Str "") n
+
 let () =
   let f t =
     Printf.printf "%S\n" (to_string t);
@@ -88,3 +95,4 @@ let () =
   f two;
   f hint;
   f nested;
+  ignore (solution (rep (Str "x") 50000))
