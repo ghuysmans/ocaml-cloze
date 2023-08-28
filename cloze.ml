@@ -51,6 +51,11 @@ let two = Cat [
   Str "."
 ]
 
+let hint = Cat [
+  Mask ("c1", [Str "Canberra"], Some "city");
+  Str " was founded in 1913.";
+]
+
 let () =
   let f t =
     Printf.printf "%S\n" (to_string t);
@@ -59,4 +64,5 @@ let () =
     )
   in
   f one;
-  f two
+  f two;
+  f hint;
