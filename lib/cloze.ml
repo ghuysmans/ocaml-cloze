@@ -1,19 +1,19 @@
 type _ t =
   | Str : string -> _ t
   | Cat : 'm t list -> 'm t
-  | Mask : string * _ t list * string option -> [`With_mask] t
+  | Mask : string * _ t * string option -> [`With_mask] t
 
 let rec solution : type m. m t -> _ t = function
   | Str _ as t -> t
   | Cat l -> Cat (List.map solution l)
-  | Mask (_, l, _) -> Cat (List.map solution l)
+  | Mask (_, t, _) -> solution t
 
 let rec to_string : type m. m t -> _ t = function
   | Str _ as t -> t
   | Cat l -> Cat (List.map to_string l)
-  | Mask (m, l, h) -> Cat [
+  | Mask (m, t, h) -> Cat [
     Str "{{"; Str m; Str "::";
-    to_string (Cat l);
+    to_string t;
     Str (Option.value ~default:"" (Option.map ((^) "::") h));
     Str "}}"
   ]
@@ -24,10 +24,10 @@ fun mask -> function
   | Cat l ->
     let t, a = List.split (List.map (delete mask) l) in
     Cat t, List.concat a
-  | Mask (m, l, h) when mask = None || mask = Some m ->
+  | Mask (m, t, h) when mask = None || mask = Some m ->
     Cat [Str "["; Str (Option.value ~default:"..." h); Str "]"],
-    [solution (Cat l)] (* FIXME test with nested masks *)
-  | Mask (_, l, _) -> delete mask (Cat l)
+    [solution t] (* FIXME test with nested masks *)
+  | Mask (_, t, _) -> delete mask t
 
 let concat t =
   let rec f : string list -> [`Without_mask] t -> string list =
@@ -46,7 +46,7 @@ let delete mask t =
 let rec masks : type m. m t -> string list = function
   | Str _ -> []
   | Cat l -> List.concat_map masks l
-  | Mask (m, l, _) -> m :: masks (Cat l)
+  | Mask (m, t, _) -> m :: masks t
 
 let delete_each t =
   masks t |>

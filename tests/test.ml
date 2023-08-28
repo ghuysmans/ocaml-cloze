@@ -2,24 +2,24 @@ open Cloze
 
 let one = Cat [
   Str "Canberra was founded in ";
-  Mask ("c1", [Str "1913"], None);
+  Mask ("c1", Str "1913", None);
   Str "."
 ]
 
 let two = Cat [
-  Mask ("c2", [Str "Canberra"], None);
+  Mask ("c2", Str "Canberra", None);
   Str " was founded in ";
-  Mask ("c1", [Str "1913"], None);
+  Mask ("c1", Str "1913", None);
   Str "."
 ]
 
 let hint = Cat [
-  Mask ("c1", [Str "Canberra"], Some "city");
+  Mask ("c1", Str "Canberra", Some "city");
   Str " was founded in 1913.";
 ]
 
 let nested = Cat [
-  Mask ("c1", [Str "Canberra was "; Mask ("c2", [Str "founded"], None)], None);
+  Mask ("c1", Cat [Str "Canberra was "; Mask ("c2", Str "founded", None)], None);
   Str " in 1913.";
 ]
 
