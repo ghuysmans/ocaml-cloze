@@ -15,16 +15,23 @@ let rec to_string : type m. m t -> _ t = function
     Str "}}"
   ]
 
-let rec delete : type m. string option -> m t -> _ t * _ t list =
-fun mask -> function
+let standard h =
+  Cat [Str "["; Str (Option.value ~default:"..." h); Str "]"]
+
+let underscore h =
+  let open Option in
+  Cat (Str "__________" :: to_list (map (fun x -> Str (" (" ^ x ^ ")")) h))
+
+let rec delete : type m.
+  (string option -> _ t) -> string option -> m t -> _ t * _ t list =
+fun render mask -> function
   | Str _ as t -> t, []
   | Cat l ->
-    let t, a = List.split (List.map (delete mask) l) in
+    let t, a = List.split (List.map (delete render mask) l) in
     Cat t, List.concat a
   | Mask (m, t, h) when mask = None || mask = Some m ->
-    Cat [Str "["; Str (Option.value ~default:"..." h); Str "]"],
-    [solution t] (* FIXME test with nested masks *)
-  | Mask (_, t, _) -> delete mask t
+    render h, [solution t] (* FIXME test with nested masks *)
+  | Mask (_, t, _) -> delete render mask t
 
 let concat t =
   let rec f : string list -> [`Without_mask] t -> string list =
@@ -36,8 +43,8 @@ let concat t =
 
 let solution t = concat (solution t)
 let to_string t = concat (to_string t)
-let delete mask t =
-  let t, a = delete mask t in
+let delete ?(render=standard) mask t =
+  let t, a = delete render mask t in
   concat t, List.map concat a
 
 let rec masks : type m. m t -> string list = function
