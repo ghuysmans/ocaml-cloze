@@ -22,7 +22,7 @@ let rec delete mask = function
   | Cat l ->
     let s, a = List.split (List.map (delete mask) l) in
     String.concat "" s, List.concat a
-  | Mask (m, l, h) when mask = m ->
+  | Mask (m, l, h) when mask = None || mask = Some m ->
     "[" ^ Option.value ~default:"..." h ^ "]",
     [solution (Cat l)] (* FIXME test with nested masks *)
   | Mask (_, l, _) -> delete mask (Cat l)
@@ -32,10 +32,10 @@ let rec masks = function
   | Cat l -> List.concat_map masks l
   | Mask (m, l, _) -> m :: masks (Cat l)
 
-let delete_all t =
+let delete_each t =
   masks t |>
   List.sort_uniq compare |>
-  List.map (fun m -> delete m t)
+  List.map (fun m -> delete (Some m) t)
 
 
 let one = Cat [
@@ -64,7 +64,7 @@ let nested = Cat [
 let () =
   let f t =
     Printf.printf "%S\n" (to_string t);
-    delete_all t |> List.iter (fun (s, l) ->
+    delete None t :: delete_each t |> List.iter (fun (s, l) ->
       Printf.printf "- %S: %s\n" s (String.concat ", " l)
     )
   in
