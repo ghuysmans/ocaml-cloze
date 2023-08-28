@@ -1,13 +1,14 @@
-type t =
-  | Str of string
-  | Cat of t list
-  | Mask of string * t list * string option
+type _ t =
+  | Str : string -> _ t
+  | Cat : 'm t list -> 'm t
+  | Mask : string * _ t list * string option -> [`With_mask] t
 
-let rec solution = function
+let rec solution : type m. m t -> _ t = function
   | Str _ as t -> t
-  | Cat l | Mask (_, l, _) -> Cat (List.map solution l)
+  | Cat l -> Cat (List.map solution l)
+  | Mask (_, l, _) -> Cat (List.map solution l)
 
-let rec to_string = function
+let rec to_string : type m. m t -> _ t = function
   | Str _ as t -> t
   | Cat l -> Cat (List.map to_string l)
   | Mask (m, l, h) -> Cat [
@@ -17,7 +18,8 @@ let rec to_string = function
     Str "}}"
   ]
 
-let rec delete mask = function
+let rec delete : type m. string option -> m t -> _ t * _ t list =
+fun mask -> function
   | Str _ as t -> t, []
   | Cat l ->
     let t, a = List.split (List.map (delete mask) l) in
@@ -28,8 +30,8 @@ let rec delete mask = function
   | Mask (_, l, _) -> delete mask (Cat l)
 
 let concat t =
-  let rec f acc = function
-    | Mask _ -> failwith "FIXME eliminate this case using a GADT"
+  let rec f : string list -> [`Without_mask] t -> string list =
+  fun acc -> function
     | Str s -> s :: acc
     | Cat l -> List.fold_right (fun x acc -> f acc x) l acc
   in
@@ -41,7 +43,7 @@ let delete mask t =
   let t, a = delete mask t in
   concat t, List.map concat a
 
-let rec masks = function
+let rec masks : type m. m t -> string list = function
   | Str _ -> []
   | Cat l -> List.concat_map masks l
   | Mask (m, l, _) -> m :: masks (Cat l)
