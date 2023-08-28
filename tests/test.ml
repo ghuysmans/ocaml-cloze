@@ -1,4 +1,6 @@
 open Cloze
+open Ast
+open Utils
 
 let one = Cat [
   Str "Canberra was founded in ";

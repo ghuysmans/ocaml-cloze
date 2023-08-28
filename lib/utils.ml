@@ -1,7 +1,4 @@
-type _ t =
-  | Str : string -> _ t
-  | Cat : 'm t list -> 'm t
-  | Mask : string * _ t * string option -> [`With_mask] t
+open Ast
 
 let rec solution : type m. m t -> _ t = function
   | Str _ as t -> t
