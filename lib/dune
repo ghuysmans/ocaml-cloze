@@ -1,3 +1,3 @@
 (ocamllex (modules lexer))
 (menhir (modules parser))
-(library (name cloze))
+(library (public_name cloze))
