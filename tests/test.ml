@@ -1,3 +1,5 @@
+(* examples taken from https://docs.ankiweb.net/editing.html#cloze-deletion *)
+
 open Cloze
 open Ast
 open Utils
